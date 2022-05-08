@@ -14,15 +14,32 @@ pub struct Syntree<T> {
 // Hint: Start with seek_node_mut
 impl<'a, T> Syntree<T> {
     pub fn new(value: T, id: ID) -> Syntree<T> {
-        todo!()
+        let syn_tree = Syntree {id: id, value: value, children: Vec:: new()};
+        syn_tree
     }
 
     pub fn push_node(&mut self, parent_id: ID, new_node: Syntree<T>) -> Result<(), String> {
-        todo!()
+        if let Some(parent) = self.seek_node_mut(&parent_id) {
+            parent.children.push(new_node);
+            return Ok(());
+        }else {
+            for child in &mut self.children {
+                return child.push_node(parent_id, new_node);
+            }
+        }
+        return Err("Parent ID not exist!".to_string());
     }
 
     pub fn prepend_node(&mut self, parent_id: ID, new_node: Syntree<T>) -> Result<(), String> {
-        todo!()
+        if let Some(parent) = self.seek_node_mut(&parent_id) {
+            parent.children.insert(0,new_node);
+            return Ok(());
+        }else {
+            for child in &mut self.children {
+                return child.prepend_node(parent_id, new_node);
+            }
+        }
+        return Err("Parent ID not exist!".to_string());
     }
 
     pub fn insert_node(
@@ -31,7 +48,15 @@ impl<'a, T> Syntree<T> {
         index: usize,
         new_node: Syntree<T>,
     ) -> Result<(), String> {
-        todo!()
+        if let Some(parent) = self.seek_node_mut(&parent_id) {
+            parent.children.insert(index,new_node);
+            return Ok(());
+        }else {
+            for child in &mut self.children {
+                return child.insert_node(parent_id, index,new_node);
+            }
+        }
+        return Err("Parent ID not exist!".to_string());
     }
 
     // Anmerkung: `'a` Is ein Lebenszeit angabe für die Referenzen
@@ -50,7 +75,16 @@ impl<'a, T> Syntree<T> {
     }
 
     pub fn seek_node_mut(&'a mut self, id: &ID) -> Option<&'a mut Syntree<T>> {
-        todo!()
+        if self.id == *id {
+            Some(self)
+        } else {
+            for child in &mut self.children {
+                if let Some(result) = child.seek_node_mut(id) {
+                    return Some(result);
+                }
+            }
+            None
+        }
     }
 }
 
@@ -86,7 +120,6 @@ mod tests {
     #[test]
     fn fill_tree() -> Result<(), String> {
         let mut tree = Syntree::new(0, ID(0));
-
         for child in 1..3 {
             let child_id = ID(child);
             let mut child = Syntree::new(child, child_id);
