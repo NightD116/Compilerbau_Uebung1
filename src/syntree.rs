@@ -86,7 +86,6 @@ mod tests {
     #[test]
     fn fill_tree() -> Result<(), String> {
         let mut tree = Syntree::new(0, ID(0));
-
         for child in 1..3 {
             let child_id = ID(child);
             let mut child = Syntree::new(child, child_id);
