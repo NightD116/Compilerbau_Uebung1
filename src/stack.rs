@@ -62,7 +62,7 @@ impl Stack for ListStack {
                     Some(other) => *self = *other,
                 };
                 Some(popped_value)
-            }
+            },
             Nil => None,
         }
     }
